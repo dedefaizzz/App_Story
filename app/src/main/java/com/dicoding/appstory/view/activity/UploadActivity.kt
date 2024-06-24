@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -13,6 +14,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.dicoding.appstory.R
 import com.dicoding.appstory.data.result.ResultState
@@ -66,6 +68,11 @@ class UploadActivity : AppCompatActivity() {
             requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
 
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q &&
+            (!hasWriteExternalStoragePermission() || !hasReadExternalStoragePermission())) {
+            requestStoragePermissions()
+        }
+
         binding.btnGallery.setOnClickListener { openGallery() }
         binding.btnCamera.setOnClickListener { openCamera() }
         binding.btnUpload.setOnClickListener { uploadStory() }
@@ -74,6 +81,22 @@ class UploadActivity : AppCompatActivity() {
     private fun hasCameraPermission() = ContextCompat.checkSelfPermission(
         this, Manifest.permission.CAMERA
     ) == PackageManager.PERMISSION_GRANTED
+
+    private fun hasWriteExternalStoragePermission() = ContextCompat.checkSelfPermission(
+        this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+    ) == PackageManager.PERMISSION_GRANTED
+
+    private fun hasReadExternalStoragePermission() = ContextCompat.checkSelfPermission(
+        this, Manifest.permission.READ_EXTERNAL_STORAGE
+    ) == PackageManager.PERMISSION_GRANTED
+
+    private fun requestStoragePermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
+            REQUEST_CODE_STORAGE_PERMISSION
+        )
+    }
 
     private fun openGallery() {
         galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -141,5 +164,9 @@ class UploadActivity : AppCompatActivity() {
         } else {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    companion object {
+        private const val REQUEST_CODE_STORAGE_PERMISSION = 100
     }
 }

@@ -15,7 +15,6 @@ import androidx.exifinterface.media.ExifInterface
 import com.dicoding.appstory.BuildConfig
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -59,7 +58,7 @@ fun createCustomTempFile(context: Context): File {
 }
 
 fun uriToFile(imageUri: Uri, context: Context): File? {
-    try {
+    return try {
         val inputStream = context.contentResolver.openInputStream(imageUri) ?: return null
 
         val myFile = createCustomTempFile(context)
@@ -72,10 +71,10 @@ fun uriToFile(imageUri: Uri, context: Context): File? {
         }
 
         inputStream.close()
-        return myFile
+        myFile
     } catch (e: Exception) {
         Log.e("Utils", "Error converting URI to File", e)
-        return null
+        null
     }
 }
 
