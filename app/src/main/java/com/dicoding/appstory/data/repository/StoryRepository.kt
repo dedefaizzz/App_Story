@@ -31,6 +31,9 @@ class StoryRepository private constructor(
     private val _storiesList = MutableLiveData<List<ListStoryItem>>()
     val storiesList: LiveData<List<ListStoryItem>> get() = _storiesList
 
+    private val _storiesWithLocation = MutableLiveData<List<ListStoryItem>>()
+    val storiesWithLocation: LiveData<List<ListStoryItem>> get() = _storiesWithLocation
+
     private val _storyDetail = MutableLiveData<Story>()
     val storyDetail: LiveData<Story> get() = _storyDetail
 
@@ -109,6 +112,22 @@ class StoryRepository private constructor(
             } ?: e.message()
             emit(ResultState.Error(Throwable(errorMessage)))
         }
+    }
+
+    fun retrieveStoriesWithLocation(token: String) {
+        apiService.getStoriesWithLocation("Bearer $token").enqueue(object : Callback<GetAllStoryResponse> {
+            override fun onResponse(call: Call<GetAllStoryResponse>, response: Response<GetAllStoryResponse>) {
+                if (response.isSuccessful) {
+                    _storiesWithLocation.value = response.body()?.listStory
+                } else {
+                    logError(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<GetAllStoryResponse>, t: Throwable) {
+                logError(t.message)
+            }
+        })
     }
 
     fun retrieveUserSession(): Flow<UserModel> = preferences.getUserSession()

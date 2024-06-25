@@ -15,6 +15,8 @@ class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() 
 
     val storyDetail = storyRepository.storyDetail
 
+    val storiesWithLocation = storyRepository.storiesWithLocation
+
     fun userLogin(email: String, password: String) = storyRepository.userLogin(email, password)
 
     fun userRegister(name: String, email: String, password: String) = storyRepository.userRegister(name, email, password)
@@ -24,6 +26,8 @@ class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() 
     fun fetchStoryDetail(authToken: String, storyId: String) = storyRepository.fetchStoryDetail(authToken, storyId)
 
     fun submitImage(authToken: String, imageFile: File, imageDescription: String) = storyRepository.submitImage(authToken, imageFile, imageDescription)
+
+    fun retrieveStoriesWithLocation(token: String) = storyRepository.retrieveStoriesWithLocation(token)
 
     fun storeUserSession(user: UserModel) {
         viewModelScope.launch {
