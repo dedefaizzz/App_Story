@@ -4,14 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.dicoding.appstory.data.model.UserModel
 import com.dicoding.appstory.data.repository.StoryRepository
+import com.dicoding.appstory.data.response.ListStoryItem
 import kotlinx.coroutines.launch
 import java.io.File
 
 class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() {
-
-    val storiesList = storyRepository.storiesList
 
     val storyDetail = storyRepository.storyDetail
 
@@ -21,7 +22,7 @@ class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() 
 
     fun userRegister(name: String, email: String, password: String) = storyRepository.userRegister(name, email, password)
 
-    fun fetchStories(authToken: String) = storyRepository.fetchAllStories(authToken)
+    fun getRetrieveStories(token: String): LiveData<PagingData<ListStoryItem>> = storyRepository.getRetrieveStories(token).cachedIn(viewModelScope)
 
     fun fetchStoryDetail(authToken: String, storyId: String) = storyRepository.fetchStoryDetail(authToken, storyId)
 

@@ -110,7 +110,7 @@ fun Bitmap.getRotatedBitmap(file: File): Bitmap? {
     }
 }
 
-fun rotateImage(source: Bitmap, angle: Float): Bitmap? {
+fun rotateImage(source: Bitmap, angle: Float): Bitmap {
     val matrix = Matrix().apply { postRotate(angle) }
     return Bitmap.createBitmap(
         source, 0, 0, source.width, source.height, matrix, true

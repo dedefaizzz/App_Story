@@ -95,4 +95,6 @@ dependencies {
     implementation("androidx.exifinterface:exifinterface:1.3.6")
 
     implementation ("com.github.bumptech.glide:glide:4.11.0")
+
+    implementation ("androidx.paging:paging-runtime-ktx:3.3.0")
 }

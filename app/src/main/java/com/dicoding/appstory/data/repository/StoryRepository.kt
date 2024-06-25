@@ -5,8 +5,13 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.liveData
 import com.dicoding.appstory.data.api.ApiService
 import com.dicoding.appstory.data.model.UserModel
+import com.dicoding.appstory.data.paging.StoryPagingSource
 import com.dicoding.appstory.data.preference.UserPreferences
 import com.dicoding.appstory.data.preference.userPreferencesDataStore
 import com.dicoding.appstory.data.response.*
@@ -27,9 +32,6 @@ class StoryRepository private constructor(
     private val apiService: ApiService,
     private val preferences: UserPreferences
 ) {
-
-    private val _storiesList = MutableLiveData<List<ListStoryItem>>()
-    val storiesList: LiveData<List<ListStoryItem>> get() = _storiesList
 
     private val _storiesWithLocation = MutableLiveData<List<ListStoryItem>>()
     val storiesWithLocation: LiveData<List<ListStoryItem>> get() = _storiesWithLocation
@@ -66,20 +68,15 @@ class StoryRepository private constructor(
         }
     }
 
-    fun fetchAllStories(token: String) {
-        apiService.getStories("Bearer $token").enqueue(object : Callback<GetAllStoryResponse> {
-            override fun onResponse(call: Call<GetAllStoryResponse>, response: Response<GetAllStoryResponse>) {
-                if (response.isSuccessful) {
-                    _storiesList.value = response.body()?.listStory
-                } else {
-                    logError(response.message())
-                }
+    fun getRetrieveStories(token: String): LiveData<PagingData<ListStoryItem>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 5
+            ),
+            pagingSourceFactory = {
+                StoryPagingSource(apiService,"Bearer $token")
             }
-
-            override fun onFailure(call: Call<GetAllStoryResponse>, t: Throwable) {
-                logError(t.message)
-            }
-        })
+        ).liveData
     }
 
     fun fetchStoryDetail(token: String, id: String) {
